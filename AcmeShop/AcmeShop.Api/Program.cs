@@ -1,17 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AcmeShop.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
-namespace AcmeShop.Web
+namespace AcmeShop.Api
 {
     public static class Program
     {
-        public static async Task Main(string[] args) => 
+        public static async Task Main(string[] args) =>
             (await CreateHostBuilder(args)
                     .Build()
                     .MigrateOrReacreateDatabaseAsync<AcmeShopContext>())
