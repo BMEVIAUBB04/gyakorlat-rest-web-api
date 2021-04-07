@@ -1,4 +1,4 @@
-﻿# ASP.NET Core Razor Pages, Web API
+﻿# ASP.NET Core Web API és többrétegű alkalmazásarchitektúra
 
 ## Célkitűzés
 
