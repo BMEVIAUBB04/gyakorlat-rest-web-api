@@ -4,6 +4,7 @@ using AcmeShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcmeShop.Data.Migrations
 {
     [DbContext(typeof(AcmeShopContext))]
-    partial class AcmeShopContextModelSnapshot : ModelSnapshot
+    [Migration("20220315202214_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,8 +819,7 @@ namespace AcmeShop.Data.Migrations
                             Iranyitoszam = "1114",
                             Telefonszam = "061-569-23-99",
                             Utca = "Baranyai u. 16.",
-                            Varos = "Budapest",
-                            VevoId = 2
+                            Varos = "Budapest"
                         },
                         new
                         {
@@ -827,8 +828,7 @@ namespace AcmeShop.Data.Migrations
                             Iranyitoszam = "1051",
                             Telefonszam = "061-457-11-03",
                             Utca = "Hercegprímás u. 22.",
-                            Varos = "Budapest",
-                            VevoId = 1
+                            Varos = "Budapest"
                         },
                         new
                         {
@@ -837,8 +837,7 @@ namespace AcmeShop.Data.Migrations
                             Iranyitoszam = "3000",
                             Telefonszam = "0646-319-169",
                             Utca = "Vörösmarty tér. 5.",
-                            Varos = "Hatvan",
-                            VevoId = 2
+                            Varos = "Hatvan"
                         },
                         new
                         {
@@ -847,8 +846,7 @@ namespace AcmeShop.Data.Migrations
                             Iranyitoszam = "2045",
                             Telefonszam = "0623-200-156",
                             Utca = "Határ u. 17.",
-                            Varos = "Törökbálint",
-                            VevoId = 3
+                            Varos = "Törökbálint"
                         });
                 });
 

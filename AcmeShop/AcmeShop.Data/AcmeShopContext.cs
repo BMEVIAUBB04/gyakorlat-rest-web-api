@@ -412,10 +412,11 @@ public class AcmeShopContext : DbContext
                 .WithMany(p => p.VevoKozpontiTelephelyek)
                 .HasForeignKey(d => d.KozpontiTelephelyId);
 
+            
             entity.HasData(
                 new Vevo { Id = 1, Nev = "Puskás Norbert", Szamlaszam = "16489665-05899845-10000038", Login = "pnorbert", Jelszo = "huti9haj1s", Email = "puskasnorbert@freemail.hu", KozpontiTelephelyId = 2 },
                 new Vevo { Id = 2, Nev = "Hajdú-Nagy Katalin", Szamlaszam = "54255831-15615432-25015126", Login = "katinka", Jelszo = "gandalf67j", Email = "hajdunagyk@hotmail.com", KozpontiTelephelyId = 1 },
-                new Vevo { Id = 3, Nev = "Grosz János", Szamlaszam = "25894467-12005362-59815126", Login = "jano", Jelszo = "jag7guFs", Email = "janos.grosz@gmail.com", KozpontiTelephelyId = 4 });
+                new Vevo { Id = 3, Nev = "Grosz János", Szamlaszam = "25894467-12005362-59815126", Login = "jano", Jelszo = "jag7guFs", Email = "janos.grosz@gmail.com", KozpontiTelephelyId = 4 });            
         });
     }
 }
