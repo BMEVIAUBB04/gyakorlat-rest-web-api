@@ -12,9 +12,10 @@ public class Megrendeles
     public int? StatuszId { get; set; }
     public int? FizetesModId { get; set; }
 
-    public FizetesMod FizetesMod { get; set; }
-    public Statusz Statusz { get; set; }
-    public Telephely Telephely { get; set; }
-    public ICollection<MegrendelesTetel> MegrendelesTetelek { get; set; }
-    public ICollection<Szamla> Szamlak { get; set; }
+    public FizetesMod? FizetesMod { get; set; }
+    public Statusz? Statusz { get; set; }
+    public Telephely? Telephely { get; set; }
+    public ICollection<MegrendelesTetel> MegrendelesTetelek { get; }
+                                            = new List<MegrendelesTetel>();
+    public ICollection<Szamla> Szamlak { get; } = new List<Szamla>();
 }

@@ -7,5 +7,6 @@ public class Afa
     public int Id { get; set; }
     public int? Kulcs { get; set; }
 
-    public ICollection<Termek> Termekek { get; set; }
+    public ICollection<Termek> Termekek { get; }
+                                        = new List<Termek>();
 }

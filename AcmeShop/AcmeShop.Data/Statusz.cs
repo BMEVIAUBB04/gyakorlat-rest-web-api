@@ -5,8 +5,10 @@ namespace AcmeShop.Data;
 public class Statusz
 {
     public int Id { get; set; }
-    public string Nev { get; set; }
+    public string? Nev { get; set; }
 
-    public ICollection<Megrendeles> Megrendelesek { get; set; }
-    public ICollection<MegrendelesTetel> MegrendelesTetelek { get; set; }
+    public ICollection<Megrendeles> Megrendelesek { get; }
+                                    = new List<Megrendeles>();
+    public ICollection<MegrendelesTetel> MegrendelesTetelek { get; }
+                                    = new List<MegrendelesTetel>();
 }

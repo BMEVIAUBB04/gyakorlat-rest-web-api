@@ -11,8 +11,8 @@ public class MegrendelesTetel
     public int? TermekId { get; set; }
     public int? StatuszId { get; set; }
 
-    public Megrendeles Megrendeles { get; set; }
-    public Statusz Statusz { get; set; }
-    public Termek Termek { get; set; }
-    public ICollection<SzamlaTetel> SzamlaTetelek { get; set; }
+    public Megrendeles? Megrendeles { get; set; }
+    public Statusz? Statusz { get; set; }
+    public Termek? Termek { get; set; }
+    public ICollection<SzamlaTetel> SzamlaTetelek { get; } = new List<SzamlaTetel>();
 }
