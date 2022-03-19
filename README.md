@@ -25,24 +25,45 @@ Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB seg
 2. Csomagoljuk ki
 3. Nyissuk meg a kicsomagolt mappa AcmeShop alkönyvtárban lévő solution fájlt.
 
-A kiinduló solution egyelőre 1 projektből áll:`AcmeShop.Data`: EF modellt, a hozzá tartozó kontextust (`AcmeShopContext`) tartalmazza. Hasonló az EF Core gyakorlaton generált kódhoz, de ez Code-First migrációt is tartalmaz (`Migration` mappa).
+A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt, a hozzá tartozó kontextust (`AcmeShopContext`) tartalmazza. Hasonló az EF Core gyakorlaton generált kódhoz, de ez Code-First migrációt is tartalmaz (`Migrations` almappa).
+
+## Feladat 1: Webes projekt elkészítése
+
+1. Adjunk a solutionhöz egy új web projektet
+    - Típusa: ASP.NET Core Web API (**nem Web App!**)
+    - Neve: *AcmeShop.Api*
+    - Framework: .NET 6.0
+    - Authentication type: *None*
+    - HTTPS, Docker: kikapcsolni
+    - Use controllers, Enable OpenAPI support: bekapcsolni
+
+2. Függőségek felvétele az új projekthez
+    - adjuk meg projektfüggőségként az `AcmeShop.Data`-t
+    - adjuk hozzá a *Microsoft.EntityFrameworkCore.Design* NuGet csomagot
+
+3. Adatbáziskapcsolat, EF beállítása
+    - connection string beállítása a konfigurációs fájlban (appsettings.json). A nyitó `{` jel után
+```javascript
+ "ConnectionStrings": {
+   "AcmeShopContext": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AcmeShop"
+ },
+```
+   - connection string kiolvasása a konfigurációból, `AcmeShopContext` példány konfigurálása ezen connection string alapján, `AcmeShopContext` példány regisztrálása DI konténerbe. Program.cs-be, a `builder.Build()` sor elé:
+```csharp
+builder.Services.AddDbContext<AcmeShopContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString(nameof(AcmeShopContext))));
+```
+
+4. Adatbázis inicializálása Package Manager Console (PMC)-ban
+   - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*)
+   - A PMC-ben a Defult projekt viszont az `AcmeShop.Data` legyen
+   - PMC-ből generáltassuk az adatbázist az alábbi paranccsal
+```powershell
+Update-Database
+```
 
 
-- `AcmeShop.Api`: a szokásos ASP.NET Core kiinduló API projekt, amiben az alábbi bővítések történtek:
-  - A projekt referálja az `AcmeShop.Data` projektet.
-  - Az alkalmazás DI konténerébe regisztrálásra került az `AcmeShopContext` a `Startup` osztály `ConfigureServices` metódusában az alábbi módon:
-  ``` C#
-  public void ConfigureServices(IServiceCollection services)
-  {
-      services.AddDbContext<AcmeShopContext>(options => options.UseSqlServer(Configuration.GetConnectionString(nameof(AcmeShopContext))));
-  // ...
-  ```
-  - Az adatbázis connection stringje bekerült az `appsettings.json`-be, az `appsettings.Development.json` törlésre került.
-  - A projekt induláskor (`Program.Main` metódus) a szokásos kiszolgáló felépítésén túl az adatbázis automatikus létrehozását/migrációját is elvégzi, így az első indításkor létre fog jönni az adatbázisunk (további migrációk esetén azokat indításkor alkalmazza az adatbázison, inkompatibilis migrációk esetén pedig újra létrehozza az adatbázist).
-  - A `Properties\launchSettings.json` fájlból eltávolításra került az IIS Expresstől való függőség, így az alkalmazás indításakor csak a Kestrel szerver fog futni egy konzolalkalmazás formájában.
-3. Indítsuk el a projektet az `F5` megnyomásával! Ez első alkalommal tovább tarthat, ilyenkor ugyanis a teljes alkalmazás fordítása és az adatbázis létrehozása történik.
-
-**Figyelem!** A szerveroldali kód módosítása során (néhány kivételtől eltekintve) szükséges újraindítani a szervert, hogy a változtatások érvényesüljenek.
 
 ## Feladat 1: Generált kód vizsgálata, JSON referenciák kezelése
 
