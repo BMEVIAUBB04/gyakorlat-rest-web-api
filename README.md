@@ -2,36 +2,32 @@
 
 ## Célkitűzés
 
-Egyszerű REST- vagy RPC-jellegű webszolgáltatások készítésének alapszintű elsajátítása.
+Egyszerű REST- vagy webszolgáltatások készítésének alapszintű elsajátítása.
 
 ## Előfeltételek
 
 A labor elvégzéséhez szükséges eszközök:
 
 - Microsoft SQL Server (LocalDB vagy Express edition, Visual Studio telepítővel telepíthető)
-- Visual Studio 2019 .NET 5 SDK-val telepítve
+- Visual Studio 2022 .NET 6 SDK-val telepítve
 
 Amit érdemes átnézned:
 
 - EF Core előadás anyaga
-- ASP.NET Core előadások anyaga (elsősorban Web API, esetleg MVC és Razor Pages)
+- ASP.NET Core előadások anyaga
 - A használt adatbázis [sémája](https://BMEVIAUBB04.github.io/gyakorlat-mssql/sema.html)
-
-## Gyakorlat menete
-
-A gyakorlatok laborvezetővel közösen és önállóan is elvégezhetők jelen útmutató segítségével. A feladatok megoldásai megtalálhatók az útmutatóban, részletes magyarázattal.
 
 ## Feladat 0: Kiinduló projekt letöltése, indítása
 
-Megjegyzés: a kiinduló projekt felépítése, a benne történt módosítások analógak az ASP.NET Razor Pages és az ASP.NET Web API laborok között.
+Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB segítségével. Az adatbázis sémájában néhány mező a .NET-ben ismeretes konvencióknak megfelelően átnevezésre került, felépítése viszont megegyezik a korábban megismertekkel.
 
-Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB segítségével, de egy másik elérési útvonalon, hogy tiszta adatbázissal induljunk. Az adatbázis sémájában néhány mező a .NET-ben ismeretes konvencióknak megfelelően átnevezésre került, felépítése viszont megegyezik a korábban megismertekkel.
+1. Töltsük le a GitHub repository-t a reposiory főoldaláról (https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api > *Code* gomb, majd *Download ZIP*) vagy a közvetlen [letöltő link](https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api/archive/refs/heads/master.zip) segítségével. 
+2. Csomagoljuk ki
+3. Nyissuk meg a kicsomagolt mappa AcmeShop alkönyvtárban lévő solution fájlt.
 
-1. Nyissuk meg a Visual Studio-t, és a megnyíló nyitóképernyőn válasszuk a "Clone or check out code" lehetőséget, és adjuk meg jelen repository git URL-jét és egy megfelelő (otthoni munkavégzés esetén tetszőleges) munkamappát: `https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api.git`
-2. A klónozást a Visual Studio el fogja végezni nekünk, megnyitja a repository mappáját. Duplaklikkeljünk a megjelenő Solution Explorer ablakban az `AcmeShop\AcmeShop.sln` fájlra, ami megnyitja a kiinduló projektünket.
+A kiinduló solution egyelőre 1 projektből áll:`AcmeShop.Data`: EF modellt, a hozzá tartozó kontextust (`AcmeShopContext`) tartalmazza. Hasonló az EF Core gyakorlaton generált kódhoz, de ez Code-First migrációt is tartalmaz (`Migration` mappa).
 
-A kiinduló solution 2 projektből áll:
-- `AcmeShop.Data`: az `AcmeShopContext`-et, a hozzá kapcsolódó entitásokat és a kiinduló migrációt tartalmazó projekt,
+
 - `AcmeShop.Api`: a szokásos ASP.NET Core kiinduló API projekt, amiben az alábbi bővítések történtek:
   - A projekt referálja az `AcmeShop.Data` projektet.
   - Az alkalmazás DI konténerébe regisztrálásra került az `AcmeShopContext` a `Startup` osztály `ConfigureServices` metódusában az alábbi módon:
