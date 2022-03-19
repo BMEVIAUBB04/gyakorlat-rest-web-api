@@ -97,17 +97,6 @@ A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel eg
     dotnet aspnet-codegenerator controller -m AcmeShop.Data.Termek -dc AcmeShop.Data.AcmeShopContext -outDir Controllers -name TermekekController -namespace AcmeShop.Api.Controllers -api
     ```
 
-Kattintsunk jobb klikkel a Controllers mappán, majd válasszuk az "Add -> New Scaffolded Item...", aztán az "API Controller with actions, using Entity Framework" lehetőséget. 
-
-![Kódgenerálás scaffoldinggal](assets/1-scaffolding-1.png)
-![Kódgenerálás scaffoldinggal](assets/1-scaffolding-2.png)
-
-A következő lehetőségnél válasszuk ki a Termek entitást, az egyetlen adatbáziskontextusunkat, végül pedig **figyeljünk**, hogy a controller neve helyesen **TermekekController** legyen, különben nem fognak megfelelően működni a controllerhez tartozó URL-ek.
-
-![Kódgenerálás scaffoldinggal](assets/1-scaffolding-3.png)
-
-Nem lesz szükségünk a WeatherForecast "modell" osztályra és az ehhez tartozó példa controllerre, ezeket töröljük ki!
-
 Indítsuk újra az alkalmazást, nézzük meg, milyen végpontokat látunk a Swagger UI szerint!
 
 ![Generált végpontok](assets/1-scaffolding-4.png)
