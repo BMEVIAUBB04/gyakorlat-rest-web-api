@@ -83,6 +83,20 @@ Az alkalmazás teljes konfigurációs kódja nem sok, a Program.cs fájlban lát
 
 A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
 
+1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot.
+2. PMC-ben telepítsük az ASP.NET Core kódgeneráló eszközt
+    ```powershell
+    dotnet tool install -g dotnet-aspnet-codegenerator
+    ```
+3. Lépjünk be a projekt könyvtárába
+    ```powershell
+    cd .\AcmeShop.Api
+    ```
+4. Generáljunk a kódgenerálóval REST API (`-api`) controllert a `Termek` entitáshoz (`-m`), mely a `AcmeShopContext` kontextushoz  (`-dc`) tartozik. A generált osztály neve legyen `TermekController` (`-name`), az `AcmeShop.Api.Controllers` névtérbe  (`-namespace`) kerüljön. A generált fájl a *Controllers* mappába (`-outDir`) kerüljön. 
+    ```powershell
+    dotnet aspnet-codegenerator controller -m AcmeShop.Data.Termek -dc AcmeShop.Data.AcmeShopContext -outDir Controllers -name TermekekController -namespace AcmeShop.Api.Controllers -api
+    ```
+
 Kattintsunk jobb klikkel a Controllers mappán, majd válasszuk az "Add -> New Scaffolded Item...", aztán az "API Controller with actions, using Entity Framework" lehetőséget. 
 
 ![Kódgenerálás scaffoldinggal](assets/1-scaffolding-1.png)
