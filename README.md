@@ -75,11 +75,13 @@ A Swagger UI-t használhatjuk az API tesztelésére, nyomjuk meg a UI-on láthat
 
 Láthatjuk alul a küldött üzenetet (jelenleg query paramétereket sem fogadó GET kérés esetén ez csak az URL-t jelenti), az arra kapott válasz státuszkódját és formázott JSON törzsét. Megnézhetjük alább a kérés kapcsán használt objektumok sematikus leírását is. Fontos észrevenni, hogy az egész alkalmazásban nem jelöltük sehol, hogy JSON alapú kommunikációt végzünk; az API végponton egyszerűen az eredményhalmazt tartalmazó objektummal tértünk vissza. A keretrendszer a kliens által küldött kérés `Accept*` fejlécmezői alapján döntötte el, hogy JSON sorosítást alkalmaz (ami egyébként az alapértelmezett), de volna lehetőség további sorosítókat is alkalmazni (pl. XML-t vagy akár CSV-t).
 
-Az alkalmazás teljes konfigurációs kódja nem sok, a Startup.cs fájlban láthatjuk a függőségek regisztrációját (`ConfigureServices`) és a kiszolgálási csővezeték konfigurációját (`Configure`). Láthatjuk, hogy a szükséges szolgáltatásokat a `ConfigureServices` `services` paraméterébe regisztrálhatjuk be (ezután használhatjuk konstruktor injektálással pl. Controllerekbe), és azokat az elemeket, amik a HTTP kérésünk kiszolgálásában közvetlenül játszanak szerepet, a middleware konfigurációnál tehetjük meg. A legtöbb third-party komponens szolgáltat számunkra szolgáltatások is, és elérhetővé tesz végpontokat is, ezt láthatjuk pl. a Swagger UI kapcsán:
+Az alkalmazás teljes konfigurációs kódja nem sok, a Program.cs fájlban láthatjuk a függőségek regisztrációját (`builder.Services.AddXXX` sorok) és a kiszolgálási csővezeték konfigurációját (`app.UseXXX`). A legtöbb third-party komponens szolgáltat számunkra szolgáltatások is, és elérhetővé tesz végpontokat is, ezt láthatjuk pl. a Swagger UI kapcsán:
 - a `services.AddSwaggerGen` hívás a megfelelő szolgáltatástípusokat konfigurálja fel és teszi elérhetővé az alkalmazás többi része számára,
-- az `app.UseSwagger` és `app.UseSwaggerUI` hívások pedig a Swagger JSON leíróját és a UI-t ajánlják ki egy-egy meghatározott HTTP végponton *kizárólag Development környezetben*.
+- az `app.UseSwagger` és `app.UseSwaggerUI` hívások pedig a Swagger JSON leíróját és a UI-t ajánlják ki egy-egy meghatározott HTTP végponton.
 
-Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
+## Feladat 3: Adatbázis objektumok lekérdezése
+
+A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
 
 Kattintsunk jobb klikkel a Controllers mappán, majd válasszuk az "Add -> New Scaffolded Item...", aztán az "API Controller with actions, using Entity Framework" lehetőséget. 
 
