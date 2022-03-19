@@ -37,35 +37,35 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
     - HTTPS, Docker: kikapcsolni
     - Use controllers, Enable OpenAPI support: bekapcsolni
 
-2. Függőségek felvétele az új projekthez
+1. Függőségek felvétele az új projekthez
     - adjuk meg projektfüggőségként az `AcmeShop.Data`-t
     - adjuk hozzá a *Microsoft.EntityFrameworkCore.Design* NuGet csomagot
 
-3. Adatbáziskapcsolat, EF beállítása
+1. Adatbáziskapcsolat, EF beállítása
     - connection string beállítása a konfigurációs fájlban (appsettings.json). A nyitó `{` jel után
-```javascript
- "ConnectionStrings": {
-   "AcmeShopContext": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AcmeShop"
- },
-```
+    ```javascript
+     "ConnectionStrings": {
+       "AcmeShopContext": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AcmeShop"
+     },
+    ```
    - connection string kiolvasása a konfigurációból, `AcmeShopContext` példány konfigurálása ezen connection string alapján, `AcmeShopContext` példány regisztrálása DI konténerbe. Program.cs-be, a `builder.Build()` sor elé:
-```csharp
-builder.Services.AddDbContext<AcmeShopContext>(
-    options => options.UseSqlServer(
-        builder.Configuration.GetConnectionString(nameof(AcmeShopContext))));
-```
+    ```csharp
+    builder.Services.AddDbContext<AcmeShopContext>(
+        options => options.UseSqlServer(
+            builder.Configuration.GetConnectionString(nameof(AcmeShopContext))));
+    ```
 
-4. Adatbázis inicializálása Package Manager Console (PMC)-ban
+1. Adatbázis inicializálása Package Manager Console (PMC)-ban
    - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*)
    - A PMC-ben a Defult projekt viszont az `AcmeShop.Data` legyen
    - PMC-ből generáltassuk az adatbázist az alábbi paranccsal
-```powershell
-Update-Database
-```
+    ```powershell
+    Update-Database
+    ```
 
+1. Projekt indítása
 
-
-## Feladat 1: Generált kód vizsgálata, JSON referenciák kezelése
+## Feladat 2: Webes projekt vizsgálata
 
 Az első indulást követően egy Swagger UI fogad minket, amin a kiinduló projektbe generált `WeatherForecastController` egyetlen, HTTP GET igére reagáló végpontját láthatjuk, amit a `​/WeatherForecast` URL-en érhetünk el. A `WeatherForecastController.Get()` metódusa nem vár paramétert, és egy 5 db véletlenszerű WeatherForecast elemet tartalmazó `IEnumerable<WeatherForecast>` elemmel tér vissza.
 
