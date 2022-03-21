@@ -108,10 +108,9 @@ Elég sok végpontot látunk, gyakorlatilag a CRUD műveletek mindegyikét megta
 Futassuk az első GET lekérdezést!
 
 Ezek után a helyes reakció, hogy az egyik szemünk sír, amíg a másik nevet. Az alábbi tanulságokat tudjuk levonni a forráskód vizsgálata után:
-- A kérések nagyon könnyen legenerálódtak, sőt, olyan szélsőséges esetekre is felkészültünk, mint például idő közben törölt termék módosításának kísérlete.
-- A navigation property-k nincsenek betöltve, ezért az összes ilyen tulajdonság az entitásban null. Ha ezeket be szeretnénk tölteni, arról magunknak kell gondoskodni.
-
-A módosítás PUT műveletben a `Termek termek` JSON objektumot deszerializálva validáció nélkül mentjük az adatbázisba. Ha a `Vevo` entitáshoz is generáltunk volna végpontokat, akkor egyszerű (és inkorrekt) volna megváltoztatni a vevők jelszavát ilyen módon.
+- a kérések nagyon könnyen legenerálódtak, sőt, olyan szélsőséges esetekre is felkészültünk, mint például idő közben törölt termék módosításának kísérlete.
+- a navigation property-k nincsenek betöltve, ezért az összes ilyen tulajdonság az entitásban null. Ha ezeket be szeretnénk tölteni, arról magunknak kell gondoskodni.
+- a módosítás PUT műveletben a `Termek termek` JSON objektumot deszerializálva validáció nélkül mentjük az adatbázisba. Ha a `Vevo` entitáshoz is generáltunk volna végpontokat, akkor egyszerű (és inkorrekt) volna megváltoztatni a vevők jelszavát ilyen módon.
 
 A `GET /api/Termekek` végpontnak megfelelő Controller action törzsét módosítsuk az alábbinak megfelelően:
 
@@ -119,110 +118,12 @@ A `GET /api/Termekek` végpontnak megfelelő Controller action törzsét módos�
 return await _context.Termek.Include(t => t.MegrendelesTetelek).ToListAsync();
 ```
 
-Hibát kapunk, ugyanis a JSON objektumban végtelen ciklus keletkezett a navigation property hatására. Miért? A Termek és a Termek.MegrendelesTetelek.Termek ugyanarra az objektumra mutat, ezért ennek a sorosítása a klasszikus értelemben véve problémás. Ezt kiküszöbölhetjük a .NET beépített JSON sorosítójának konfigurációjával. A Startup fájlban konfiguráljuk megfelelően a sorosítót, hogy a referenciákat valóban referenciaként kezelje:
+Hibát kapunk, ugyanis a JSON objektumban végtelen ciklus keletkezett a navigation property hatására. Miért? A `Termek` és a `Termek.MegrendelesTetelek.Termek` ugyanarra az objektumra mutat, ezért ennek a sorosítása a klasszikus értelemben véve problémás. Ezt kiküszöbölhetnénk a .NET beépített JSON sorosítójának konfigurációjával, de ilyenkor erre a kliensoldali sorosítót is fel kell készíteni. Ha jobban átgondoljuk a helyzetet, nem a sorosítóval van a gond, sokkal inkább azzal, hogy közvetlenül az entitásmodell (egy részét) sorosítjuk - a problémáink is ebből adódnak.
 
-``` C#
-//services.AddControllers();
-services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototipizálásra jó, **változtatás nélkül ne használjuk**! Gyakorlatilag közvetlen elérést engedünk a végfelhasználónak az adatbázishoz (egy kevésbé optimális absztrakción keresztül).
 
-```
+## Feladat 3: DTO-k lekérdezése
 
-Ezután az alábbihoz hasonló JSON választ fogunk kapni eredményül: 
-
-``` JSON
-{
-  "$id": "1",
-  "$values": [
-    {
-      "$id": "2",
-      "id": 1,
-      "nev": "Activity playgim",
-      "nettoAr": 7488,
-      "raktarkeszlet": 21,
-      "afaId": 3,
-      "kategoriaId": 8,
-      "leiras": "<termek><termek_meret><mertekegyseg>cm</mertekegyseg><szelesseg>150</szelesseg><magassag>50</magassag><melyseg>150</melyseg></termek_meret><csomag_parameterek><csomag_darabszam>1</csomag_darabszam><csomag_meret><mertekegyseg>cm</mertekegyseg><szelesseg>150</szelesseg><magassag>20</magassag><melyseg>20</melyseg></csomag_meret></csomag_parameterek><leiras>\r\n                \t\tElemmel mukodik, a csomag nem tartalmay elemet.\r\n                \t</leiras><ajanlott_kor>0-18 hónap</ajanlott_kor></termek>",
-      "kep": null,
-      "afa": null,
-      "kategoria": null,
-      "megrendelesTetelek": {
-        "$id": "3",
-        "$values": [
-          {
-            "$id": "4",
-            "id": 4,
-            "mennyiseg": 2,
-            "nettoAr": 7488,
-            "megrendelesId": 2,
-            "termekId": 1,
-            "statuszId": 5,
-            "megrendeles": null,
-            "statusz": null,
-            "termek": {
-              "$ref": "2"
-            },
-            "szamlaTetelek": null
-          },
-          {
-            "$id": "5",
-            "id": 13,
-            "mennyiseg": 25,
-            "nettoAr": 7488,
-            "megrendelesId": 4,
-            "termekId": 1,
-            "statuszId": 3,
-            "megrendeles": null,
-            "statusz": null,
-            "termek": {
-              "$ref": "2"
-            },
-            "szamlaTetelek": null
-          }
-        ]
-      }
-    },
-    // ...
-  ]
-}
-```
-
-Vegyük észre, hogy minden objektum sorosítása *alapvetően* megváltozott. Minden létező objektum kapott egy új, `$id` névre hallgató JSON mezőt, amely egy olyan értéket tartalmaz, ami kizárólag a JSON dokumentumon *belül* értelmezhető (tehát két külön JSON dokumentumban szereplő 1-es `$id`-jú elem nem ugyanazt a valós elemet reprezentálja). Ugyanez az érték bármely más ponton referálva lehet, például a termékünkhöz tartozó `megrendelesTetelek` mező elemeinek `termek` mezője visszareferál a szülőre (2-es `$id`-val). Emiatt **ezek az objektumok nem is felelnek meg az eredeti sémának**. Ugyanígy, mivel a tömbök is referenciák, ezért nem egyszerű JSON tömbként vannak sorosítva, hanem ők is kaptak egy `$id` értéket, az eredeti értékeik pedig ebben az új tömb "objektumban", a `$values` értékben találhatók.
-
-Most, hogy ezzel megvagyunk, egészítsük ki a GET lekérdezésünket a további kapcsolatokkal:
-
-``` C#
-return await _context.Termek.Include(t => t.MegrendelesTetelek)
-                                .ThenInclude(mt => mt.Megrendeles)
-                                    .ThenInclude(m => m.Telephely)
-                                        .ThenInclude(t => t.Vevo)
-                            .ToListAsync();
-```
-
-Most újból futtathatjuk a lekérdezést... de ismét hibát kapunk. A JSON túl "mély", azaz túl sok objektum van egymásba ágyazva benne. Az MVC alapbeállítása `32`, ezt vigyük fel a .NET `System.Text.Json` API-jának egyébként is használt alapértékére, `64`-re a Startup.cs-ben:
-
-``` C#
-services.AddControllers().AddJsonOptions(o =>
-{
-    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    o.JsonSerializerOptions.MaxDepth = 64;
-});
-```
-
-Ha futtatjuk a lekérdezést, láthatjuk, hogy ezzel ténylegesen **lekérjük a vevőket is, beleértve a vevők jelszó mezőjét**. 
-
-Tanulságok:
-- Egyrészt (remélhetőleg) tudjuk, hogy a jelszavakat számos okból kifolyólag nem tároljuk adatbázisban nyers szöveg formájában. Nem is tároljuk őket egyszerű hasheléssel (mert azonos jelszavakhoz azonos hash-ek fognak tartozni). Ehelyett megbízható kriptografikus hashfüggvényt és véletlen salt értéket tárolunk.
-- Az entitás jellemzően nem alkalmas arra, hogy hálózaton közlekedjen. Az entitás az adatbázisunk struktúráját írja le, teljesen más absztrakciós szintet képvisel, mint a hálózati réteg, amin az alkalmazás kliensei számára nyújtunk egy programozási felületet. Ezt **absztrakció-szivárgásnak** nevezzük, ami hatalmas biztonsági rés, ugyanis könnyen tudunk érvelni alacsonyabb szinten levő absztrakciókról is, ha az entitások "utaznak a dróton".
-- Az `Include`-ok felesleges komplexitást tesznek a lekérdezésbe, valamint gyakorlatilag a teljes `Termek` tábla tartalmát gondolkodás nélkül szolgáltattuk a kliens számára (tény, hogy csak néhány termékünk van, de valós esetben ez egy többezer sor méretű tábla kell, hogy legyen, esetleg bináris erőforrásokkal együtt).
-- A scaffolding ebben az esetben legfeljebb gyors prototipizálásra jó, **production környezetben ne használjuk**! Gyakorlatilag kiiktattuk az alkalmazásunk minden közbülső rétegét, és közvetlen elérést engedtünk a végfelhasználónak az adatbázishoz (egy kevésbé optimális absztrakción keresztül).
-
-## Feladat 2: Üzleti logikai réteg architekturális felépítése
-
-> "Most pedig csináljuk vissza, amit elrontottunk..."
-
-Szóval a JSON sorosító felkonfigurálása az adott pillanatban **jó ötletnek tűnt**, de a háttérben sokkal nagyobb hibát vétettünk, az egyik lehető legdrágábbat: *architekturális hibát*.
-
-Ha az alkalmazásunk korrekten rétegelt, az adatréteg és a kommunikációs réteg megfelelően szeparált, akkor ez a probléma nem jön elő. Ugyanis tudjuk, hogy ha a hálózaton sorosítani szeretnénk objektumokat, akkor intuitívan automatikusan nem fogunk rekurzív referenciákat alkalmazni. Sőt, a REST alapelveit követve az első feladatunk az lett volna, hogy **azonosítjuk az erőforrásokat, amiket lekérdezni és manipulálni lehet**. A termék ettől függetlenül továbbra is jó ötlet, viszont magát az entitás hálózaton való sorosítását felejtsük el! A terméket ún. [**aggregate root**](https://en.wikipedia.org/wiki/Domain-driven_design#Building_blocks)nak fogjuk tekinteni.
 
 Hozzunk létre tehát egy szolgáltatás/üzleti logikai réteget, amivel szeparáljuk a kommunikációs/hálózati és az adatrétegbeni feladatokat! 
 1. A solution-ön jobb klikk -> Add -> New project..., majd válasszuk a Class Library (C#) lehetőséget. A projekt neve legyen `AcmeShop.Bll` (mint **B**usiness **L**ogic **L**ayer), a .NET verzió .NET 5.0. Fontos, hogy a projekt neve helyesen legyen megadva, különben a projektben található névterek is hibásak lesznek!
