@@ -135,7 +135,8 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
     ```
     
     Record típusok: egyszerűen (akár egy sorban) definiálható adatosztályok. A fenti szintaxissal megadott típusok referencia típusok lesznek, melyek:
-    - konstruktorral példányosíthatóak
+    - a megadott konstruktorral példányosíthatóak
+    - a konstruktorban megadott paramétereknek megfelelő (csak olvasható) property-kkel rendelkeznek
     - példányosítás után nem változtathatók az adataik
     - két példány összehasonlítása az adataik alapján történik, nem a memóriacím alapján
     
@@ -237,16 +238,46 @@ Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy v
 
 ## Feladat 1 - Új termék hozzáadása HTTP POST művelettel
 
-1. Módosítsd a PUT műveletet, hogy `TermekInsertUpdateDto` DTO-ra építsen. Ehhez elsőként lásd el a választ dokumentáló `ProducesResponseType` attribútummal a függvényt. A függvény sikeres beszúrás esetén _Created_ (201) HTTP válasszal tér vissza, a törzsben pedig az új termékkel. A visszatérési típus legyen szintén `TermekInsertUpdateDto`.
+1. Módosítsd a PUT műveletet (`PutTermek`), hogy `TermekInsertUpdateDto` DTO-ra építsen. Ehhez elsőként lásd el a választ dokumentáló `ProducesResponseType` attribútummal a függvényt. A függvény sikeres beszúrás esetén _Created_ (201) HTTP válasszal tér vissza, a törzsben pedig az új termékkel. A visszatérési típus legyen szintén `TermekInsertUpdateDto`.
 
-2. Módosítsd a függvény paraméter típusát és visszatérési érték típusát is a fenti specifikációnak megfelelően. Érdemes a paraméter nevét is átírni.
+1. Módosítsd a függvény paraméter típusát és visszatérési érték típusát is a fenti specifikációnak megfelelően. Érdemes a paraméter nevét is átírni.
 
-3. Az EF kontextushoz hozzáadás előtt készíts a bejövő paraméter adatainak megfelelő `Termek` példányt, hasonlóan a módosítás művelethez. Érdemes ennek a példánynak adni a `termek` változónevet.  Az `Id` property-t **ne** állítsd be, azt az adatbázis fogja kiosztani!
+1. Az EF kontextushoz hozzáadás előtt készíts a bejövő paraméter adatainak megfelelő `Termek` példányt, hasonlóan a módosítás művelethez. Érdemes ennek a példánynak adni a `termek` változónevet.  Az `Id` property-t **ne** állítsd be, azt az adatbázis fogja kiosztani!
 
-4. A `SaveChanges` hívás után az entitáspéldány automatikusan frissül, kitöltődik az elsődleges kulcs property (`Id`). Készíts az entitáspéldány alapján `TermekInsertUpdateDto` példányt és ezt add vissza a `CreatedAtAction` hívás utolsó paramétereként. A `CreatedAtAction` elkészíti a megfelelő HTTP 201-es választ.
+1. A `SaveChanges` hívás után az entitáspéldány automatikusan frissül, kitöltődik az elsődleges kulcs property (`Id`). Készíts az entitáspéldány alapján `TermekInsertUpdateDto` példányt és ezt add vissza a `CreatedAtAction` hívás utolsó paramétereként. A `CreatedAtAction` elkészíti a megfelelő HTTP 201-es választ.
 
-5. Hajts végre egy beszúrást a Swagger felületen. Bemenetként használhatod a módosításnál használt JSON-t, csak írj át néhány értéket.
-    
+1. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válasz (201) megjelenik-e. Hajts végre egy beszúrást a Swagger felületen. Bemenetként használhatod a módosításnál használt JSON-t, csak írj át néhány értéket.
+
+## Feladat 2 - Termék törlése HTTP DELETE művelettel
+
+1.  Lásd el a választ dokumentáló `ProducesResponseType` attribútummal a `DeleteTermek` függvényt. A kliens ugyanolyan válaszokra számíthat, mint módosítás esetén.
+
+1. Mivel a függvény eddig sem kapott vagy adott vissza entitástípust, így a megvalósításon nem kell módosítani. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válaszok (201, 404) megjelennek-e. Hajts végre egy beszúrást a Swagger felületen, majd a beszúrt elemet töröl ki, a törlő művelettel.
+
+## Feladat 3 - Kapcsolódó elem beágyazása lekérdezés válaszába
+
+1. Ha a navigációs property-nek megfelelő adatot szeretnénk lekérdezés eredményébe belerakni, akkor érdemes a navigációs propertynek megfelelő adat típusaként a típus DTO változatát használni. Ezzel könnyebben elkerülhetjük a körkörös hivatkozásokat. A `Termek.Kategoria` navigációs propertynek vedd fel a megfelelőjét a `TermekDto`-ba. Az új adat (konstruktorparaméter) neve `Kategoria`, típusa `KategoriaDto` legyen.
+
+1. Bővítsd a `Select` hívásokat a `GetTermek` függvényekben, hogy a `Kategoria` paraméter is kapjon értéket az entitáspéldány `Kategoria` propertyje alapján. Figyelj arra, hogy a kategória lehet kitöltetlen (`null`) is, ilyen esetben ne hívd meg a `KategoriaDto` konstruktort, hanem `null` legyen a `Kategoria` konstruktorparaméter értéke. Ehhez használhatod az [elágazás operátort](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/conditional-operator).
+
+1. Ellenőrizd, hogy kitöltött és kitöltetlen kategóriájú termékek esetén is jól működnek-e a lekérdező műveletek. Kitöltött esetben beágyazott JSON objektumként jelenik meg a kategória neve és azonosítója.
+
+      ```JSON
+      {
+        "id": 2,
+        "nev": "Színes bébikönyv",
+        "nettoAr": 1738,
+        "raktarkeszlet": 58,
+        "afaKulcs": 20,
+        "kategoriaId": 8,
+        "leiras": "rövidített leírás",
+        "kategoria": {
+            "id": 8,
+            "nev": "0-6 hónapos kor"
+        }
+     }
+     ```
+
 ---
 
 Az itt található oktatási segédanyagok a BMEVIAUBB04 tárgy hallgatóinak készültek. Az anyagok oly módú felhasználása, amely a tárgy oktatásához nem szorosan kapcsolódik, csak a szerző(k) és a forrás megjelölésével történhet.
