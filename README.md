@@ -232,6 +232,20 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
      }
      ```
 Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy valóban megváltozott-e a termék.
+
+# Önálló feladatok
+
+## Feladat 1 - Új termék hozzáadása HTTP POST művelettel
+
+1. Módosítsd a PUT műveletet, hogy `TermekInsertUpdateDto` DTO-ra építsen. Ehhez elsőként lásd el a választ dokumentáló `ProducesResponseType` attribútummal a függvényt. A függvény sikeres beszúrás esetén _Created_ (201) HTTP válasszal tér vissza, a törzsben pedig az új termékkel. A visszatérési típus legyen szintén `TermekInsertUpdateDto`.
+
+2. Módosítsd a függvény paraméter típusát és visszatérési érték típusát is a fenti specifikációnak megfelelően. Érdemes a paraméter nevét is átírni.
+
+3. Az EF kontextushoz hozzáadás előtt készíts a bejövő paraméter adatainak megfelelő `Termek` példányt, hasonlóan a módosítás művelethez. Érdemes ennek a példánynak adni a `termek` változónevet.  Az `Id` property-t **ne** állítsd be, azt az adatbázis fogja kiosztani!
+
+4. A `SaveChanges` hívás után az entitáspéldány automatikusan frissül, kitöltődik az elsődleges kulcs property (`Id`). Készíts az entitáspéldány alapján `TermekInsertUpdateDto` példányt és ezt add vissza a `CreatedAtAction` hívás utolsó paramétereként. A `CreatedAtAction` elkészíti a megfelelő HTTP 201-es választ.
+
+5. Hajts végre egy beszúrást a Swagger felületen. Bemenetként használhatod a módosításnál használt JSON-t, csak írj át néhány értéket.
     
 ---
 
