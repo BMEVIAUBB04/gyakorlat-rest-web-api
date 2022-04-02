@@ -55,6 +55,7 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
             builder.Configuration.GetConnectionString(nameof(AcmeShopContext))));
     ```
 
+1. Ha van már adatbázis _AcmeShop_ néven, töröljük le.
 1. Adatbázis inicializálása Package Manager Console (PMC)-ban
    - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*)
    - A PMC-ben a Defult projekt viszont az `AcmeShop.Data` legyen
@@ -122,8 +123,7 @@ Hibát kapunk, ugyanis a JSON objektumban végtelen ciklus keletkezett a navigat
 
 Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototipizálásra jó, **változtatás nélkül ne használjuk**! Gyakorlatilag közvetlen elérést engedünk a végfelhasználónak az adatbázishoz (egy kevésbé optimális absztrakción keresztül).
 
-## Feladat 3: DTO-k lekérdezése
-
+## Feladat 4: DTO-k lekérdezése
 
 1. Hozzunk létre az API projektben egy új "osztályt" _DTOs.cs_ fájlban, a fájl teljes tartalmát pedig cseréljük le az alábbira:
     ``` C#
@@ -143,10 +143,11 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
        return await _context.Termek.Select(t => new TermekDto(t.Id, t.Nev, t.NettoAr, t.Raktarkeszlet, t.Afa.Kulcs, t.KategoriaId, t.Leiras )).ToListAsync();
     }
     ```
+    Látható, hogy a `TermekDto` konstruktor kitöltése elég gépies, monoton munka. Vannak komponensek (pl. az [AutoMapper](https://automapper.org/)), melyek segítenek két egymásnak könnyen megfeleltethető típus közötti átalakításokban.
   
 1. Próbáljuk ki, hogy a Swagger felületen most már TermekDto-nak megfelelő JSON-t kapunk-e válaszként.
 
-## Feladat 3: Lekérdezés specifikáció szerint
+## Feladat 5: Lekérdezés specifikáció szerint
 
 A [specifikáció minta](https://en.wikipedia.org/wiki/Specification_pattern) egyik variánsa, amikor egy olyan objektumot készítünk, ami a szűrési feltételeket tartalmazza. Ez kombinálható különböző aspektusorientált műveletekkel (pl. attribútumok), amivel akár automatikusan felületet is generálhatunk. Nekünk most a Swagger UI lesz a "felületünk", ezért mi csak a műveletet fogjuk megvalósítani.
 
