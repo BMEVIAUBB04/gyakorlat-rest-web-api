@@ -148,13 +148,91 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
        return await _context.Termek.Select(t => new TermekDto(t.Id, t.Nev, t.NettoAr, t.Raktarkeszlet, t.Afa.Kulcs, t.KategoriaId, t.Leiras )).ToListAsync();
     }
     ```
-    Látható, hogy a `TermekDto` konstruktor kitöltése elég gépies, monoton munka. Vannak komponensek (pl. az [AutoMapper](https://automapper.org/)), melyek segítenek két egymásnak könnyen megfeleltethető típus közötti átalakításokban.
+    Jó hír, hogy a `Select` szépen feltölti a DTO-t még ha a kapcsolódó elemekhez is kell navigálni. Nem kell félnünk a `null` értékű navigciós propertyktől, például a `t.Afa` esetében.
+    Rossz hír, hogy a `TermekDto` konstruktor kitöltése elég gépies, monoton munka. Vannak komponensek (pl. az [AutoMapper](https://automapper.org/)), melyek segítenek két egymásnak könnyen megfeleltethető típus közötti átalakításokban.
   
 1. Próbáljuk ki, hogy a Swagger felületen most már `TermekDto`-nak megfelelő JSON-t kapunk-e válaszként.
 
-## Feladat 5: Lekérdezés specifikáció szerint
+1.  A `GET /api/Termekek/{id}` végpontnak megfelelő kontroller műveletet is írjuk át, hogy `TermekDto`-t adjon vissza. Az EF lekérdezés trükkös, mert ha az okos `Select`-et akarjuk használni, akkor előtte nem használhatjuk a `First/Single/Find` LINQ operátorokat, mert nem tudjuk utána a `Select`-et hívni. A `Select` után viszont csak triviális szűréseket ( pl. olyanokat, amik nem változtatják a WHERE feltételt, mint például a paraméter nélküli `First/Single/Find`) használhatunk, mert a `Select` után már `TermekDto` kollekcióval dolgozunk, a `TermekDto` viszont nem entitástípus (a `Termek` az). A megoldás a sima szűrés, projekció, első elemre szűrés.
 
+    ``` C#
+    public async Task<ActionResult<TermekDto>> GetTermek(int id)
+    {
+        //var termek = await _context.Termek.FindAsync(id);
+        var termek = await _context.Termek                
+                .Where(t=>t.Id == id)
+                .Select(t => new TermekDto(t.Id, t.Nev, t.NettoAr, t.Raktarkeszlet, t.Afa.Kulcs, t.KategoriaId, t.Leiras))
+                .SingleOrDefaultAsync();
+        /* ... if ... */
+     }    
+    ```
 
+1. Ha szép Swagger dokumentációt szeretnénk, érdemes a függvényeket ellátni attribútumokkal, amik mutatják, hogy a kliens milyen válaszokra számíthat. Ennél a függvénynél 404-es választ kaphat, ha nincs a megadott azonosítóval elem, egyébként pedig normál OK (200) választ a törzsben a megtalált termékkel.
+
+    ``` C#
+     [HttpGet("{id}")]
+     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+     [ProducesResponseType(typeof(TermekDto), StatusCodes.Status200OK)]
+     public async Task<ActionResult<TermekDto>> GetTermek(int id)
+    ```
+
+1. Próbáljuk ki, a Swagger felületnek a fentieknek megfelelő válaszváltozatokat kell mutatnia. Próbáljuk meghívni a műveletet a felületről létező és nem létező azonosítóval is.
+
+## Feladat 5: Módosítás HTTP PUT művelettel
+
+1. Általában a módosító, beszúró műveletek esetén igyekszünk korlátozni a beszúrható/módosítható adatok körét. Minél több adatbázisentitást érint a művelet, annál nehezebb jól működő, robosztus kódot írni rá. Készítsünk külön DTO-t a módosítás/beszúrás műveletekhez, melyhez csak a `Termek` entitás alapadatai közül válogatunk, a kapcsolódó entitások adatai közül nem. Vegyünk fel új DTO-t a _DTOs.cs_-be
+
+     ``` C#
+    public record TermekInsertUpdateDto(int Id, string Nev, double? NettoAr, int? Raktarkeszlet, string Leiras);
+    ```
+
+1. Valósítsuk meg a PUT műveletet az új DTO-ra építve. A generált kódból is látszik, ennél a függvénynél 404-es is választ adunk, ha nincs a megadott azonosítóval elem, sikeres módosítás után pedig üres _No content_ (204) választ.
+
+     ``` C#
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PutTermek(int id, TermekInsertUpdateDto termekDto)
+    {
+        if (id != termekDto.Id)
+        {
+             return BadRequest();
+         }
+
+         var termek = new Termek()
+         {
+             Id = termekDto.Id,
+             Nev = termekDto.Nev,
+             NettoAr = termekDto.NettoAr,
+             Raktarkeszlet = termekDto.Raktarkeszlet,
+             Leiras = termekDto.Leiras
+         };
+
+         _context.Entry(termek).Property(t => t.Nev).IsModified = true;
+         _context.Entry(termek).Property(t => t.NettoAr).IsModified = true;
+         _context.Entry(termek).Property(t => t.Raktarkeszlet).IsModified = true;
+         _context.Entry(termek).Property(t => t.Leiras).IsModified = true;
+         
+         /* ... try ...*/
+    }
+    ```
+    
+    - A bejövő DTO alapján le kell gyártanunk egy annak megfelelő `Termek` példányt. Fontos, hogy az `Id`-t is átmásoljuk, innen tudja az EF, hogy melyik terméket kell módosítani.
+    - Ha DTO a paraméter, nem jó ötlet a teljes entitást módosítottnak jelölni, mert olyan property-k is megváltozhatnak, amik nem is szerepelnek a DTO-ban. Kizárólag a DTO-ban szereplő property-ket jelöltjük meg változottként - kivéve az `Id` property-t, mert az elsődleges kulcs tipikusan nem változtatható.
+  
+1. Próbáljuk ki. Érdemes először valamelyik lekérdezést végrehajtani és onnan egy termék JSON-jét átmásolni a PUT művelet bemenetére, kitörölni belőle az `AfaKulcs`, `KategoriaId` propetryket, majd átírni néhány értéket (ne az `id`-t!). Ne felejtsük megadni az azonosítót paraméterként is a Swagger felületen. A lustábbaknak itt egy példa JSON:
+
+     ```JSON
+     {
+        "id": 1,
+        "nev": "Activity playgim2",
+        "nettoAr": 7500,
+        "raktarkeszlet": 20,
+        "leiras": "rövidebb leírás"
+     }
+     ```
+Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy valóban megváltozott-e a termék.
+    
 ---
 
 Az itt található oktatási segédanyagok a BMEVIAUBB04 tárgy hallgatóinak készültek. Az anyagok oly módú felhasználása, amely a tárgy oktatásához nem szorosan kapcsolódik, csak a szerző(k) és a forrás megjelölésével történhet.
