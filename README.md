@@ -154,7 +154,7 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
   
 1. Próbáljuk ki, hogy a Swagger felületen most már `TermekDto`-nak megfelelő JSON-t kapunk-e válaszként.
 
-1.  A `GET /api/Termekek/{id}` végpontnak megfelelő kontroller műveletet is írjuk át, hogy `TermekDto`-t adjon vissza. Az EF lekérdezés trükkös, mert ha az okos `Select`-et akarjuk használni, akkor előtte nem használhatjuk a `First/Single/Find` LINQ operátorokat, mert nem tudjuk utána a `Select`-et hívni. A `Select` után viszont csak triviális szűréseket ( pl. olyanokat, amik nem változtatják a WHERE feltételt, mint például a paraméter nélküli `First/Single/Find`) használhatunk, mert a `Select` után már `TermekDto` kollekcióval dolgozunk, a `TermekDto` viszont nem entitástípus (a `Termek` az). A megoldás a sima szűrés, projekció, első elemre szűrés.
+1.  A `GET /api/Termekek/{id}` végpontnak megfelelő kontroller műveletet is írjuk át, hogy `TermekDto`-t adjon vissza. Az EF lekérdezés trükkös, mert ha az okos `Select`-et akarjuk használni, akkor előtte nem használhatjuk a `First/Single/Find` LINQ operátorokat, mert nem tudjuk utána a `Select`-et hívni. A `Select` után viszont csak triviális szűréseket ( pl. olyanokat, amik nem változtatják a WHERE feltételt, mint például a paraméter nélküli `First/Single/Find`) használhatunk, mert a `Select` után már `TermekDto` kollekcióval dolgozunk, a `TermekDto` viszont nem entitástípus (a `Termek` az). A megoldás a sima szűrés - projekció - első elemre szűrés sorrend.
 
     ``` C#
     public async Task<ActionResult<TermekDto>> GetTermek(int id)
