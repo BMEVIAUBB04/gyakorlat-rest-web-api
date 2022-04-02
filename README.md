@@ -281,21 +281,6 @@ Próbáljuk ki a lekérdezésünket!
 
 ---
 
-Bónusz érdekességek:
-- A controller réteg úgy jó, ha vékony. 
-    - A feladata leírni, hogyan néz ki az API, ezt már önmagában azzal is teszi, hogy a megfelelő függvényszignatúrákat definiáljuk és a helyes attribútumokat helyezzük el a metóduson, paramétereken. 
-    - Elvégzi az alapszintű authorizációt, de nem az üzleti logikai jogosultságellenőrzést. 
-    - Elvégzi a HTTP kérés/válasz formázását, de nem az üzleti adatok manipulációját vagy transzformációját.
-- A controller nem lehet `record`, mert `record` csak másik `record`-ból vagy "semmiből" (az Object-ből) származhat. Lehetne, de akkor nem kapnánk meg a `ControllerBase` nyújtotta szolgáltatásokat (pl. `HttpStatusCode` és egyéb kényelmi metódusok, `Request` és `Response` objektumok közvetlen elérése stb.).
-- A bonyolultabb specifikációs minta komponálható, ÉS / VAGY stb. logikai operátorokat lehet vele megfogalmazni. Esetünkben csak egy egyszerű szűrő leíró. Ilyenkor illik legalább egy további tulajdonsággal szabályozhatóvá tenni a rendezés módját és irányát.
-- Látjuk, hogy a specifikációban "értelmes" dolgokra akarunk szűrni, tehát nem a raktárkészlet konkrét számára, hanem arra, hogy van-e valami raktáron vagy nincs.
-- Az entitás és DTO közötti transzformációt most a szolgáltatás végzi. Magát a lekérdezést is üzleti logikai fogalomként, és nem adatszintű fogalomként kezeljük. Ha így lenne, akkor további absztrakcióra volna szükség a BLL és adatréteg között.
-- A max. oldalméret a szolgáltatásréteg miatt 100 (hasraütésszerűen). Eredetileg nem volt korlátozva a maximum lekérhető entitások száma.
-- A DTO-kban használhatnánk kompozíciót, esetleg akár öröklést is, a példában nem volt rá szükség. Ez azért is van így, mert a kategóriát nem akartuk beletenni például a `TermekDto`-ba, ugyanis a kategóriák teljes listája külön lekérhető (ott viszont szűrésnek nem volt értelme). Az ÁFA Id-ja helyett (ami ebben a kontextusban nem értelmes adat) inkább az ÁFA-kulcs került a DTO-ba. Vegyük észre, hogy a DTO nem az adatbázis struktúráját írja le, hanem úgy reprezentálja a DB-ben található adatot, hogy azt könnyű legyen felhasználni, értelmezni.
-  - Ugyanígy nem látjuk a DTO-ban a `Kep` bájt tömböt sem, a képet ugyanis érdemes külön HTTP végponton kiajánlani! Ha a JSON-be sorosítanánk meglevő kép bájt tömböt, az nagyon megnöveli a JSON méretét (kb. 3,5-szer nagyobb lesz, mint a nyers kép mérete), és egyébként sem szép dolog nyersen belekódolni a DTO-ba.
-
----
-
 Az itt található oktatási segédanyagok a BMEVIAUBB04 tárgy hallgatóinak készültek. Az anyagok oly módú felhasználása, amely a tárgy oktatásához nem szorosan kapcsolódik, csak a szerző(k) és a forrás megjelölésével történhet.
 
 Az anyagok a tárgy keretében oktatott kontextusban értelmezhetőek. Az anyagokért egyéb felhasználás esetén a szerző(k) felelősséget nem vállalnak.
