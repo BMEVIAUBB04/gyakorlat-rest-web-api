@@ -246,7 +246,7 @@ Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy v
 
 1. A `SaveChanges` hívás után az entitáspéldány automatikusan frissül, kitöltődik az elsődleges kulcs property (`Id`). Készíts az entitáspéldány alapján `TermekInsertUpdateDto` példányt és ezt add vissza a `CreatedAtAction` hívás utolsó paramétereként. A `CreatedAtAction` elkészíti a megfelelő HTTP 201-es választ.
 
-1. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válasz (201) megjelenik-e. Hajts végre egy beszúrást a Swagger felületen. Bemenetként használhatod a módosításnál használt JSON-t, csak írj át néhány értéket.
+1. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válasz (201) megjelenik-e. Hajts végre egy beszúrást a Swagger felületen. Bemenetként használhatod a módosításnál használt JSON-t, csak írj át néhány értéket. Ellenőrizd, hogy a válaszban megjelenik-e az új termék azonosítója. A válasz fejlécében megjelenik egy _location_ HTTP fejléc, ami egy URL-t tartalmaz. Próbáld ki, hogy egy új böngészőlapon az URL-t megnyitva az új termék adatai jelennek-e meg.
 
 ## Feladat 2 - Termék törlése HTTP DELETE művelettel
 
