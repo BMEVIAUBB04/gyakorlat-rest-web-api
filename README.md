@@ -131,8 +131,13 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
 
     public record TermekDto(int Id, string Nev, double? NettoAr, int? Raktarkeszlet, int? AfaKulcs, int? KategoriaId, string Leiras);
 
-    public record KategoriaDto(int Id, string Nev, int? SzuloKategoriaId);
+    public record KategoriaDto(int Id, string Nev);
     ```
+    
+    Record típusok: egyszerűen (akár egy sorban) definiálható adatosztályok. A fenti szintaxissal megadott típusok referencia típusok lesznek, melyek:
+    - konstruktorral példányosíthatóak
+    - példányosítás után nem változtathatók az adataik
+    - két példány összehasonlítása az adataik alapján történik, nem a memóriacím alapján
     
 1. A `GET /api/Termekek` végpontnak megfelelő kontroller művelet törzsében `TermekDto`-t adjunk vissza `Temek` helyett
     ``` C#
