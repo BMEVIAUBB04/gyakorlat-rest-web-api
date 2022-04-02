@@ -14,7 +14,7 @@ A labor elvégzéséhez szükséges eszközök:
 Amit érdemes átnézned:
 
 - EF Core előadás anyaga
-- ASP.NET Core előadások anyaga
+- ASP.NET Core Web API előadás anyaga
 - A használt adatbázis [sémája](https://BMEVIAUBB04.github.io/gyakorlat-mssql/sema.html)
 
 ## Feladat 0: Kiinduló projekt letöltése, indítása
