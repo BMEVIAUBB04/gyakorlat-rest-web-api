@@ -109,10 +109,10 @@ Futassuk az első GET lekérdezést!
 
 Ezek után a helyes reakció, hogy az egyik szemünk sír, amíg a másik nevet. Az alábbi tanulságokat tudjuk levonni a forráskód vizsgálata után:
 - a kérések nagyon könnyen legenerálódtak, sőt, olyan szélsőséges esetekre is felkészültünk, mint például idő közben törölt termék módosításának kísérlete.
-- a navigation property-k nincsenek betöltve, ezért az összes ilyen tulajdonság az entitásban null. Ha ezeket be szeretnénk tölteni, arról magunknak kell gondoskodni.
+- a navigation property-k nincsenek betöltve, ezért az összes ilyen tulajdonság az entitásban `null`. Ha ezeket be szeretnénk tölteni, arról magunknak kell gondoskodni.
 - a módosítás PUT műveletben a `Termek termek` JSON objektumot deszerializálva validáció nélkül mentjük az adatbázisba. Ha a `Vevo` entitáshoz is generáltunk volna végpontokat, akkor egyszerű (és inkorrekt) volna megváltoztatni a vevők jelszavát ilyen módon.
 
-A `GET /api/Termekek` végpontnak megfelelő Controller action törzsét módosítsuk az alábbinak megfelelően:
+A `GET /api/Termekek` végpontnak megfelelő kontroller művelet törzsében töltessük ki az EF-fel a `MegrendelesTetelek` navigációs property-t
 
 ``` C#
 return await _context.Termek.Include(t => t.MegrendelesTetelek).ToListAsync();
@@ -125,147 +125,26 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
 ## Feladat 3: DTO-k lekérdezése
 
 
-Hozzunk létre tehát egy szolgáltatás/üzleti logikai réteget, amivel szeparáljuk a kommunikációs/hálózati és az adatrétegbeni feladatokat! 
-1. A solution-ön jobb klikk -> Add -> New project..., majd válasszuk a Class Library (C#) lehetőséget. A projekt neve legyen `AcmeShop.Bll` (mint **B**usiness **L**ogic **L**ayer), a .NET verzió .NET 5.0. Fontos, hogy a projekt neve helyesen legyen megadva, különben a projektben található névterek is hibásak lesznek!
-2. Hozzunk létre a BLL-ben egy `Models` "osztályt", a fájl teljes tartalmát pedig cseréljük le az alábbira:
+1. Hozzunk létre az API projektben egy új "osztályt" _DTOs.cs_ fájlban, a fájl teljes tartalmát pedig cseréljük le az alábbira:
     ``` C#
-    namespace AcmeShop.Bll.Models
-    {
-        public sealed record TermekDto(int Id, string Nev, double? NettoAr, int? Raktarkeszlet, int? AfaKulcs, int? KategoriaId, string Leiras) { }
+    namespace AcmeShop.Models;
 
-        public sealed record KategoriaDto(int Id, string Nev, int? SzuloKategoriaId) { }
-    }
+    public record TermekDto(int Id, string Nev, double? NettoAr, int? Raktarkeszlet, int? AfaKulcs, int? KategoriaId, string Leiras);
+
+    public record KategoriaDto(int Id, string Nev, int? SzuloKategoriaId);
     ```
-3. Hozzunk létre ezután egy `TermekService` osztályt, az alábbi tartalommal:
+    
+1. A `GET /api/Termekek` végpontnak megfelelő kontroller művelet törzsében `TermekDto`-t adjunk vissza `Temek` helyett
     ``` C#
-    public interface ITermekService
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TermekDto>>> GetTermek()
     {
-        Task<IReadOnlyCollection<KategoriaDto>> GetKategoriakAsync();
-        Task<IReadOnlyCollection<TermekDto>> GetTermekekAsync();
-    }
-    public class TermekService : ITermekService
-    {
-        public Task<IReadOnlyCollection<KategoriaDto>> GetKategoriakAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<TermekDto>> GetTermekekAsync()
-        {
-            throw new NotImplementedException();
-        }
+       //return await _context.Termek.Include(t => t.MegrendelesTetelek).ToListAsync();
+       return await _context.Termek.Select(t => new TermekDto(t.Id, t.Nev, t.NettoAr, t.Raktarkeszlet, t.Afa.Kulcs, t.KategoriaId, t.Leiras )).ToListAsync();
     }
     ```
-
-Az üzleti logikai réteget kössük be az alkalmazásba! A projektek referenciáit rétegelten állítsuk be: az `Api` ismeri a `Bll`-t, a `Bll` ismeri a `Data`-t.
-1. Az `Api` projekten jobb klikk, Add..., Project Reference... Állítsuk be, hogy ismeri a Bll-t, és **nem ismeri a Data**-t.
-2. A `Bll` projekten ugyanígy, ő viszont csak a `Data`-t ismeri.
-
-Ha most fordítjuk, futtatjuk az alkalmazást, akkor semmi nem változott. Ez azért van, mert .NET-ben a projektreferenciák alapértelmezetten "tranzitívak", ami azt jelenti, hogy mivel az `Api` ismeri a `Bll`-t, az pedig a `Data`-t, ezért az `Api` közvetetten, de ismeri a `Data`-t. Most azt szeretnénk, ha ez nem így történne. Erre több lehetőségünk is van, a leggyorsabb az alábbi:
-
-3. A solution-ön jobb klikk -> Add -> New Item..., majd válasszuk az "XML file" lehetőséget, és adjuk neki (pontosan!) az alábbi nevet: `Directory.Build.props`. Ez a solution minden projektjére közös beállításokat tartalmaz.
-4. A fájl tartalma legyen az alábbi:
-    ``` XML
-    <Project>
-      <PropertyGroup>
-        <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
-      </PropertyGroup>
-    </Project>
-    ```
-
-Ha most fordítjuk az appot, akkor nem fordul! Szerencsére, ugyanis pont ezt akartuk. 10 db fordítási hibánk van, ahol megpróbáltuk közvetlenül elérni az adatréteget az `Api` projektből.
-
-Egyrészt, a `TermekekController` már tudjuk, hogy koncepciójában is hibás (az entitás ne is legyen a controller rétegben ismert fogalom). Másrészt, a Program és Startup fájlok közvetlenül a AcmeShopContext-et próbálják használni. Javítsuk ki a felelősségi körök eme szörnyű megsértését!
-1. Töröljük ki az `Api/Controlleres/TermekekController`-t!
-2. Hozzunk létre egy új osztályt a `Bll`-ben `DependencyInjectionExtensions` néven az alábbi tartalommal. Ez lesz felelős az adatréteg bekötéséért a Dependency Injection IoC konténerbe, ill. az app indulásakor történő esetleges DB migrációért.
-    ``` C#
-    using AcmeShop.Data;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-
-    namespace AcmeShop.Bll
-    {
-        public static class DependencyInjectionExtensions
-        {
-            public static IServiceCollection AddAcmeShopBll(this IServiceCollection services, string connectionString) =>
-                services.AddAcmeShopContext(connectionString).AddTermekService();
-
-            public static IServiceCollection AddTermekService(this IServiceCollection services) =>
-                services.AddScoped<ITermekService, TermekService>();
-
-            public static IServiceCollection AddAcmeShopContext(this IServiceCollection services, string connectionString) =>
-                services.AddDbContext<AcmeShopContext>(options => options.UseSqlServer(connectionString));
-
-            public static async Task MigrateOrReacreateAcmeShopDatabaseAsync(this IServiceProvider serviceProvider)
-            {
-                var dbContext = serviceProvider.GetRequiredService<AcmeShopContext>();
-                var allMigrations = dbContext.Database.GetMigrations().ToHashSet();
-                var appliedMigrations = await dbContext.Database.GetAppliedMigrationsAsync();
-                if (appliedMigrations.Any(m => !allMigrations.Contains(m)))
-                {
-                    await dbContext.Database.EnsureDeletedAsync();
-                    await dbContext.Database.MigrateAsync();
-                }
-                else if (allMigrations.Any(m => !appliedMigrations.Contains(m)))
-                    await dbContext.Database.MigrateAsync();
-            }
-        }
-    }
-
-    ```
-3. Javítsuk ki a Program.cs-ben található hibát, tehát hívjuk meg a Bll megfelelő metódusát és ne közvetlenül babráljuk innen a DB-t:
-    ``` C#
-    using AcmeShop.Bll;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using System.Threading.Tasks;
-
-    namespace AcmeShop.Api
-    {
-        public static class Program
-        {
-            public static async Task Main(string[] args) =>
-                (await CreateHostBuilder(args)
-                        .Build()
-                        .MigrateOrReacreateDatabaseAsync())
-                    .Run();
-
-            public static IHostBuilder CreateHostBuilder(string[] args) =>
-                Host.CreateDefaultBuilder(args)
-                    .ConfigureWebHostDefaults(webBuilder =>
-                    {
-                        webBuilder.UseStartup<Startup>();
-                    });
-
-            private static async Task<IHost> MigrateOrReacreateDatabaseAsync(this IHost host)
-            {
-                using var scope = host.Services.CreateScope();
-                await scope.ServiceProvider.MigrateOrReacreateAcmeShopDatabaseAsync();
-                return host;
-            }
-        }
-    }
-    ```
-4. Végül pedig regisztráljuk be az alkalmazás BLL rétegének megfelelő szolgáltatásokat a szolgáltatáskonténerbe a `Startup.ConfigureServices`-ben, egyúttal pedig töröljük a JSON félrekonfigurációnkat:
-    ``` C#
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // using AcmeShop.Bll;
-        services.AddAcmeShopBll(Configuration.GetConnectionString("AcmeShopContext"));
-        services.AddControllers();
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "AcmeShop.Api", Version = "v1" });
-        });
-    }
-    ```
-5. Az esetleges hibás `AcmeShop.Data` névtér importálásokat töröljük az `Api` projektből.
-
-Ha tetszik, ha nem; sikeresen felépítettük a szépen rétegelt üzleti alkalmazásunkat. Már csak a tényleges lekérdezés elkészítése van hátra.
+  
+1. Próbáljuk ki, hogy a Swagger felületen most már TermekDto-nak megfelelő JSON-t kapunk-e válaszként.
 
 ## Feladat 3: Lekérdezés specifikáció szerint
 
