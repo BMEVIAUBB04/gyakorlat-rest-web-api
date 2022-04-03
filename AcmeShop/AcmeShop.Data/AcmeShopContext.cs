@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using System;
 
 namespace AcmeShop.Data;
@@ -418,5 +419,17 @@ public class AcmeShopContext : DbContext
                 new Vevo { Id = 2, Nev = "Hajdú-Nagy Katalin", Szamlaszam = "54255831-15615432-25015126", Login = "katinka", Jelszo = "gandalf67j", Email = "hajdunagyk@hotmail.com", KozpontiTelephelyId = 1 },
                 new Vevo { Id = 3, Nev = "Grosz János", Szamlaszam = "25894467-12005362-59815126", Login = "jano", Jelszo = "jag7guFs", Email = "janos.grosz@gmail.com", KozpontiTelephelyId = 4 });            
         });
+    }
+}
+
+
+public class AcmeShopContextFactory : IDesignTimeDbContextFactory<AcmeShopContext>
+{
+    public AcmeShopContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<AcmeShopContext>();
+        optionsBuilder.UseSqlServer("connectionstring");
+
+        return new AcmeShopContext(optionsBuilder.Options);
     }
 }
