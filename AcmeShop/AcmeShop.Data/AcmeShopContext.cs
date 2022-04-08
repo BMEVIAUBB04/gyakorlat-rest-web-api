@@ -422,7 +422,9 @@ public class AcmeShopContext : DbContext
     }
 }
 
-
+// Csak a dotnet aspnet-codegenerator parancsnak van erre szüksége a lenti osztályra, valószínűleg egy bug miatt
+// Csak a parancs lefutás idejére aktiváljuk.
+/*
 public class AcmeShopContextFactory : IDesignTimeDbContextFactory<AcmeShopContext>
 {
     public AcmeShopContext CreateDbContext(string[] args)
@@ -433,3 +435,4 @@ public class AcmeShopContextFactory : IDesignTimeDbContextFactory<AcmeShopContex
         return new AcmeShopContext(optionsBuilder.Options);
     }
 }
+*/
