@@ -85,7 +85,8 @@ Az alkalmazás teljes konfigurációs kódja nem sok, a Program.cs fájlban lát
 A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
 
 1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot.
-2. PMC-ben telepítsük az ASP.NET Core kódgeneráló eszközt
+2. Fordítsuk az API projektet.
+3. PMC-ben telepítsük az ASP.NET Core kódgeneráló eszközt
     ```powershell
     dotnet tool install -g dotnet-aspnet-codegenerator
     ```
