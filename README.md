@@ -239,7 +239,7 @@ Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy v
 
 ## Feladat 1 - Új termék hozzáadása HTTP POST művelettel
 
-1. Módosítsd a PUT műveletet (`PutTermek`), hogy `TermekInsertUpdateDto` DTO-ra építsen. Ehhez elsőként lásd el a választ dokumentáló `ProducesResponseType` attribútummal a függvényt. A függvény sikeres beszúrás esetén _Created_ (201) HTTP válasszal tér vissza, a törzsben pedig az új termékkel. A visszatérési típus legyen szintén `TermekInsertUpdateDto`.
+1. Módosítsd a POST műveletet (`PostTermek`), hogy `TermekInsertUpdateDto` DTO-ra építsen. Ehhez elsőként lásd el a választ dokumentáló `ProducesResponseType` attribútummal a függvényt. A függvény sikeres beszúrás esetén _Created_ (201) HTTP válasszal tér vissza, a törzsben pedig az új termékkel. A visszatérési típus legyen szintén `TermekInsertUpdateDto`.
 
 1. Módosítsd a függvény paraméter típusát és visszatérési érték típusát is a fenti specifikációnak megfelelően. Érdemes a paraméter nevét is átírni.
 
@@ -253,7 +253,7 @@ Sikeres lefutás után ellenőrizzük valamelyik lekérdező művelettel, hogy v
 
 1.  Lásd el a választ dokumentáló `ProducesResponseType` attribútummal a `DeleteTermek` függvényt. A kliens ugyanolyan válaszokra számíthat, mint módosítás esetén.
 
-1. Mivel a függvény eddig sem kapott vagy adott vissza entitástípust, így a megvalósításon nem kell módosítani. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válaszok (201, 404) megjelennek-e. Hajts végre egy beszúrást a Swagger felületen, majd a beszúrt elemet töröl ki, a törlő művelettel.
+1. Mivel a függvény eddig sem kapott vagy adott vissza entitástípust, így a megvalósításon nem kell módosítani. Ellenőrizd a Swagger felületen, hogy a specifikációnak megfelelő lehetséges válaszok (204, 404) megjelennek-e. Hajts végre egy beszúrást a Swagger felületen, majd a beszúrt elemet töröl ki, a törlő művelettel.
 
 ## Feladat 3 - Kapcsolódó elem beágyazása lekérdezés válaszába
 
