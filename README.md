@@ -41,7 +41,8 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
 1. Függőségek felvétele az új projekthez
     - adjuk meg projektfüggőségként az `AcmeShop.Data`-t
     - indítsuk el a Package Manager Console-t (PMC)
-    - A PMC-ben a Defult projekt az `AcmeShop.Data` legyen
+    - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*),
+    - A PMC-ben a Defult projekt is az `AcmeShop.Api` legyen
     - Adjuk hozzá a Microsoft.EntityFrameworkCore.Design csomagot:
 
     ```powershell
@@ -64,7 +65,7 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
 
 1. Ha van már adatbázis _AcmeShop_ néven, töröljük le.
 1. Adatbázis inicializálása PMC-ban
-   - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*), a Defult projekt maradjon az `AcmeShop.Data` legyen
+   - A Defult projekt legyen az `AcmeShop.Data` legyen
    - PMC-ből generáltassuk az adatbázist az alábbi paranccsal
     ```powershell
     Update-Database
@@ -90,14 +91,15 @@ Az alkalmazás teljes konfigurációs kódja nem sok, a Program.cs fájlban lát
 
 A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
 
-1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot. PMC-ben (default prject API legyn):
-    ```powershell    
-    Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design -Version 8.0.13 
+1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot. PMC-ben (default prject API legyen):
+    ```powershell
+    Install-Package Microsoft.EntityFrameworkCore.Tools -Version 8.0.13    
+    Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design -Version 8.0.7 
     ```
 2. Fordítsuk az API projektet.
 3. PMC-ben telepítsük az ASP.NET Core kódgeneráló eszközt
     ```powershell
-    dotnet tool install -g dotnet-aspnet-codegenerator
+    dotnet tool install -g dotnet-aspnet-codegenerator --version 8.0.7
     ```
 3. Lépjünk be a projekt könyvtárába
     ```powershell

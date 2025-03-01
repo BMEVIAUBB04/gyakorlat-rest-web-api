@@ -97,7 +97,7 @@ namespace AcmeShop.Data.Migrations
                     Raktarkeszlet = table.Column<int>(type: "int", nullable: true),
                     AfaId = table.Column<int>(type: "int", nullable: true),
                     KategoriaId = table.Column<int>(type: "int", nullable: true),
-                    Leiras = table.Column<string>(type: "xml", nullable: true),
+                    Leiras = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     Kep = table.Column<byte[]>(type: "image", nullable: true)
                 },
                 constraints: table =>
