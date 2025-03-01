@@ -9,7 +9,7 @@ Egyszerű REST- vagy webszolgáltatások készítésének alapszintű elsajátí
 A labor elvégzéséhez szükséges eszközök:
 
 - Microsoft SQL Server (LocalDB vagy Express edition, Visual Studio telepítővel telepíthető)
-- Visual Studio 2022 .NET 6 SDK-val telepítve
+- Visual Studio 2022 .NET 8 SDK-val telepítve
 
 Amit érdemes átnézned:
 
@@ -22,7 +22,7 @@ Amit érdemes átnézned:
 Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB segítségével. Az adatbázis sémájában néhány mező a .NET-ben ismeretes konvencióknak megfelelően átnevezésre került, felépítése viszont megegyezik a korábban megismertekkel.
 
 1. Töltsük le a GitHub repository-t a reposiory főoldaláról (https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api > *Code* gomb, majd *Download ZIP*) vagy a közvetlen [letöltő link](https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api/archive/refs/heads/master.zip) segítségével. 
-2. Csomagoljuk ki
+2. Csomagoljuk ki.
 3. Nyissuk meg a kicsomagolt mappa AcmeShop alkönyvtárban lévő solution fájlt.
 
 A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt, a hozzá tartozó kontextust (`AcmeShopContext`) tartalmazza. Hasonló az EF Core gyakorlaton generált kódhoz, de ez Code-First migrációt is tartalmaz (`Migrations` almappa).
@@ -32,14 +32,21 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
 1. Adjunk a solutionhöz egy új web projektet
     - Típusa: ASP.NET Core Web API (**nem Web App!**)
     - Neve: *AcmeShop.Api*
-    - Framework: .NET 6.0
+    - Framework: .NET 8.0
     - Authentication type: *None*
     - HTTPS, Docker: kikapcsolni
+    - Do not use top-level statement: kikapcsolni
     - Use controllers, Enable OpenAPI support: bekapcsolni
 
 1. Függőségek felvétele az új projekthez
     - adjuk meg projektfüggőségként az `AcmeShop.Data`-t
-    - adjuk hozzá a *Microsoft.EntityFrameworkCore.Design* NuGet csomagot
+    - indítsuk el a Package Manager Console-t (PMC)
+    - A PMC-ben a Defult projekt az `AcmeShop.Data` legyen
+    - Adjuk hozzá a Microsoft.EntityFrameworkCore.Design csomagot:
+
+    ```powershell
+    Install-Package Microsoft.EntityFrameworkCore.Design -Version 8.0.13 
+    ```
 
 1. Adatbáziskapcsolat, EF beállítása
     - connection string beállítása a konfigurációs fájlban (appsettings.json). A nyitó `{` jel után
@@ -56,9 +63,8 @@ A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt,
     ```
 
 1. Ha van már adatbázis _AcmeShop_ néven, töröljük le.
-1. Adatbázis inicializálása Package Manager Console (PMC)-ban
-   - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*)
-   - A PMC-ben a Defult projekt viszont az `AcmeShop.Data` legyen
+1. Adatbázis inicializálása PMC-ban
+   - Indítandó projekt az `AcmeShop.Api` projekt legyen (jobbklikk az AcmeShop.Api-n > *Set as Startup Project*), a Defult projekt maradjon az `AcmeShop.Data` legyen
    - PMC-ből generáltassuk az adatbázist az alábbi paranccsal
     ```powershell
     Update-Database
@@ -84,7 +90,10 @@ Az alkalmazás teljes konfigurációs kódja nem sok, a Program.cs fájlban lát
 
 A `WeatherForecastController` nem használta az adatbázisunkat. Vegyünk fel egy új Controllert, aminek segítségével manipulálni tudjuk az adatbázist egy REST API-n keresztül! A leggyorsabb módja ennek a kódgenerálás (scaffolding).
 
-1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot.
+1. Adjunk hozzá az API projekthez a *Microsoft.VisualStudio.Web.CodeGeneration.Design* NuGet csomagot. PMC-ben (default prject API legyn):
+    ```powershell    
+    Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design -Version 8.0.13 
+    ```
 2. Fordítsuk az API projektet.
 3. PMC-ben telepítsük az ASP.NET Core kódgeneráló eszközt
     ```powershell
