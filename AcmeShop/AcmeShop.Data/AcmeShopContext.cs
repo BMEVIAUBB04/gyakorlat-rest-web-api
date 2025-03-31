@@ -248,7 +248,7 @@ public class AcmeShopContext : DbContext
         {
             entity.Property(e => e.Kep).HasColumnType("image");
 
-            entity.Property(e => e.Leiras).HasColumnType("xml");
+            //entity.Property(e => e.Leiras).HasColumnType("xml");
 
             entity.Property(e => e.Nev).HasMaxLength(50);
 
