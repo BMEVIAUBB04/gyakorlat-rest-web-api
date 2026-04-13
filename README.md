@@ -21,9 +21,8 @@ Amit érdemes átnézned:
 
 Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB segítségével. Az adatbázis sémájában néhány mező a .NET-ben ismeretes konvencióknak megfelelően átnevezésre került, felépítése viszont megegyezik a korábban megismertekkel.
 
-1. Töltsük le a GitHub repository-t a reposiory főoldaláról (https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api > *Code* gomb, majd *Download ZIP*) vagy a közvetlen [letöltő link](https://github.com/BMEVIAUBB04/gyakorlat-rest-web-api/archive/refs/heads/master.zip) segítségével. 
-2. Csomagoljuk ki.
-3. Nyissuk meg a kicsomagolt mappa AcmeShop alkönyvtárban lévő solution fájlt.
+1. Klónozd a GitHub Classroom feladat elfogadása után létrejött repository-t. 
+2. Nyisd meg a repository AcmeShop alkönyvtárában lévő solution fájlt.
 
 A kiinduló solution egyelőre egy projektből áll:`AcmeShop.Data`: EF modellt, a hozzá tartozó kontextust (`AcmeShopContext`) tartalmazza. Hasonló az EF Core gyakorlaton generált kódhoz, de ez Code-First migrációt is tartalmaz (`Migrations` almappa).
 
@@ -140,9 +139,9 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
 1. Hozzunk létre az API projektben egy új "osztályt" _DTOs.cs_ fájlban, a fájl teljes tartalmát pedig cseréljük le az alábbira:
     ``` C#
     namespace AcmeShop.Models;
-
+    
     public record TermekDto(int Id, string Nev, double? NettoAr, int? Raktarkeszlet, int? AfaKulcs, int? KategoriaId, string Leiras);
-
+    
     public record KategoriaDto(int Id, string Nev);
     ```
     
@@ -211,7 +210,7 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
         {
              return BadRequest();
          }
-
+    
          var termek = new Termek()
          {
              Id = termekDto.Id,
@@ -220,7 +219,7 @@ Ebből is tászik, hogy a scaffolding ebben az esetben legfeljebb gyors prototip
              Raktarkeszlet = termekDto.Raktarkeszlet,
              Leiras = termekDto.Leiras
          };
-
+    
          _context.Entry(termek).Property(t => t.Nev).IsModified = true;
          _context.Entry(termek).Property(t => t.NettoAr).IsModified = true;
          _context.Entry(termek).Property(t => t.Raktarkeszlet).IsModified = true;
