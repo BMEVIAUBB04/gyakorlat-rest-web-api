@@ -17,6 +17,14 @@ Amit érdemes átnézned:
 - ASP.NET Core Web API előadás anyaga
 - A használt adatbázis [sémája](https://BMEVIAUBB04.github.io/gyakorlat-mssql/sema.html)
 
+
+### Leadandó
+
+1. A gyakorlat során a megoldások teszteléséről készíts képernyőképet és írj 1-2 mondatos magyarázatot mindegyik feladatról!
+1. A gyakorlat végeztével egy commit készüljön az aktuális állapotról!
+1. Az Önálló feladatokat oldd meg a közös megoldásokhoz hasonlóan!
+1. A leadási határidőig nyugodtan kibővítheted vagy módosíthatod a megoldásodat, az akkori állapotot fogjuk értékelni.
+
 ## Feladat 0: Kiinduló projekt letöltése, indítása
 
 Az előző laborokon megszokott adatmodellt fogjuk használni MS SQL LocalDB segítségével. Az adatbázis sémájában néhány mező a .NET-ben ismeretes konvencióknak megfelelően átnevezésre került, felépítése viszont megegyezik a korábban megismertekkel.
